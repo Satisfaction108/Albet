@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="favicon.png" type="image/x-icon">
+    <title>Albet.cc</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap');
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            position: relative;
+            background: linear-gradient(to bottom, #3e8dff, #a7c2ff); /* Soft winter blue gradient */
+            background-image: url('https://www.transparenttextures.com/patterns/45-degree-fabric-light.png');
+        }
+
+        .background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://cdn.glitch.global/1caa0d6c-909c-4be5-b690-949e87ee6654/dashboard.webp?v=1729440951202') no-repeat center center fixed;
+            background-size: cover;
+            opacity: 0.7;
+            filter: blur(4px);
+            animation: fadeIn 1.75s forwards;
+        }
+
+        .login-container {
+            background-color: rgba(255, 255, 255, 0.85);
+            padding: 50px;
+            border-radius: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 600px;
+            width: 100%;
+            backdrop-filter: blur(8px);
+            position: relative;
+            opacity: 0;
+            animation: fadeIn 1.75s forwards; /* Delay the fade-in of the login container */
+        }
+
+        .login-container h1 {
+            margin-bottom: 30px;
+            font-size: 36px;
+            color: #003366;
+            font-family: 'Playfair Display', serif;
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.4);
+            letter-spacing: 1px;
+        }
+
+        .login-button {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 12px;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        .login-button.discord {
+            background-color: #7289da;
+            color: white;
+        }
+
+        .login-button.discord:hover {
+            background-color: #5b6eae;
+            transform: scale(1.05);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .login-button.google {
+            background-color: #db4437;
+            color: white;
+        }
+
+        .login-button.google:hover {
+            background-color: #b33a2d;
+            transform: scale(1.05);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .login-button.guest {
+            background-color: #a1a1a1;
+            color: #333;
+        }
+
+        .login-button.guest:hover {
+            background-color: #8a8a8a;
+            transform: scale(1.05);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .snowflake {
+            position: absolute;
+            top: -10px;
+            z-index: 1;
+            user-select: none;
+            pointer-events: none;
+            color: #fff;
+            text-shadow: 0 0 5px #000;
+            opacity: 0.8;
+        }
+
+        @keyframes fadeIn {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="background"></div>
+    <div class="login-container">
+        <h1>Albet.cc Login</h1>
+        <button class="login-button discord" onclick="window.location.href='https://albet-cc.glitch.me/auth/discord/'">Login with Discord</button>
+        <button class="login-button google" onclick="window.location.href='https://albet-cc.glitch.me/auth/google/'">Login with Google</button>
+        <button class="login-button guest" onclick="window.location.href='https://albet-cc.glitch.me/auth/guest/'">Sign in as Guest</button>
+    </div>
+
+    <script>
+        let snowflakeCount = 0;
+        const maxSnowflakes = 50;
+
+        function createSnowflake() {
+            if (snowflakeCount >= maxSnowflakes) return;
+
+            const snowflake = document.createElement('div');
+            snowflake.classList.add('snowflake');
+            snowflake.textContent = '❄';
+
+            const size = Math.random() * 10 + 15; // Random size between 15px and 25px
+            snowflake.style.fontSize = `${size}px`;
+
+            const speed = (25 - size) * 0.5 + 4; // Smaller snowflakes fall faster
+            const rotationSpeed = Math.random() * 3 + 2; // Random rotation speed between 2s and 5s
+
+            snowflake.style.left = `${Math.random() * 100}vw`; // Random horizontal position
+
+            document.body.appendChild(snowflake);
+            snowflakeCount++;
+
+            let start = Date.now();
+            let duration = speed * 1000;
+
+            function animate() {
+                let timePassed = Date.now() - start;
+                let progress = timePassed / duration;
+
+                if (progress > 1) progress = 1;
+
+                snowflake.style.transform = `translateY(${progress * 100}vh) rotate(${progress * 360}deg)`;
+
+                if (progress < 1) {
+                    requestAnimationFrame(animate);
+                } else {
+                    snowflake.remove();
+                    snowflakeCount--;
+                }
+            }
+
+            requestAnimationFrame(animate);
+        }
+
+        // Create snowflakes at intervals
+        setInterval(createSnowflake, 300);
+    </script>
+</body>
+</html>
