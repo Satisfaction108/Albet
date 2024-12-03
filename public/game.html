@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Albet.cc</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: #f0f0f0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        #map {
+            position: absolute;
+            width: 4000px;
+            height: 4000px;
+            background-color: #ffffff;
+            z-index: 1;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        #ball {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            background-color: #42cbf5;
+            border-radius: 50%;
+            border: 2px solid #000000;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5), inset 0 0 10px rgba(255, 255, 255, 0.3);
+            z-index: 2;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        #minimap-container {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            width: 150px;
+            height: 150px;
+            background-color: rgba(240, 240, 240, 0.8);
+            border: 2px solid #525151;
+            border-radius: 15px;
+            overflow: hidden;
+            z-index: 3;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        #minimap {
+            position: absolute;
+            width: 150px;
+            height: 150px;
+            background-color: #e0e0e0;
+            overflow: hidden;
+        }
+
+        .minimap-ball {
+            position: absolute;
+            width: 7px;
+            height: 7px;
+            background-color: #42cbf5;
+            border-radius: 50%;
+        }
+
+        .grid-line {
+            position: absolute;
+            background-color: #ddd;
+            z-index: 0;
+        }
+
+        .trail {
+            position: absolute;
+            border-radius: 50%;
+            background-color: hsl(194, 90%, 61%);
+            opacity: 1;
+        }
+
+        .minimap-trail {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background-color: rgba(66, 203, 245, 0.9);
+            border-radius: 50%;
+            z-index: 1;
+            opacity: 1;
+            animation: fadeOut 2s forwards, scaleDown 2s forwards;
+        }
+
+        @keyframes fadeOut {
+            0% {
+                opacity: 1;
+            }
+            100% {
+                opacity: 0;
+            }
+        }
+
+        @keyframes scaleDown {
+            0% {
+                transform: scale(1);
+            }
+            100% {
+                transform: scale(0.5);
+            }
+        }
+
+        .anime-container {
+            position: absolute;
+            width: 100%;
+            height: 100vh;
+        }
+
+        .dot {
+            position: absolute;
+            border-radius: 50%;
+            background-color: hsl(60, 100%, 80%);
+            opacity: 0;
+        }
+
+        #settings-button {
+            position: fixed;
+            top: 10px;
+            left: -40px;
+            width: 40px;
+            height: 40px;
+            background-color: #48A7A3;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            z-index: 4;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 16px;
+            color: #ffffff;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+            transition: left 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #settings-button::before {
+            content: '▶';
+            font-size: 20px;
+        }
+
+        #settings-button:hover {
+            left: 10px;
+        }
+
+        #settings-panel {
+            position: fixed;
+            top: 95px;
+            left: -310px;
+            width: 258px;
+            padding: 20px;
+            background-color: #ffffff;
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            z-index: 4;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 14px;
+            color: #333;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            transition: left 0.3s ease, transform 0.3s ease, opacity 0.3s ease;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        #settings-panel.show {
+            left: 10px;
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateY(-2px);
+        }
+
+        .settings-option {
+            margin-bottom: 20px;
+        }
+
+        .settings-option label {
+            margin-left: 12px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .settings-option input[type="checkbox"] {
+            cursor: pointer;
+            accent-color: #007bff;
+            transform: scale(1.2);
+        }
+
+        .settings-section {
+            display: none;
+        }
+
+        .settings-section.active {
+            display: block;
+        }
+
+        .settings-tabs {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0;
+            position: fixed;
+            top: 60px;
+            left: -310px;
+            width: 270px;
+            z-index: 4;
+            transition: left 0.3s ease;
+        }
+
+        .settings-tabs.show {
+            left: 25px;
+        }
+
+        .settings-tabs.hide {
+            left: -310px;
+        }
+
+        .settings-tab {
+            cursor: pointer;
+            padding: 10px 20px;
+            background-color: #48A7A3;
+            border-radius: 8px 8px 0 0;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            flex: 1;
+            text-align: center;
+            margin-right: 10px;
+            z-index: 5;
+        }
+
+        .settings-tab:last-child {
+            margin-right: 0;
+        }
+
+        .settings-tab.active {
+            background-color: #1A6D6A;
+            color: #ffffff;
+            transform: translateY(-2px);
+        }
+
+        .settings-tab:hover {
+            background-color: #2C3E50;
+            color: #ffffff;
+            transform: translateY(-2px);
+        }
+
+        .dropbtn {
+            background-color: #48A7A3;
+            color: white;
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        .dropbtn:hover {
+            background-color: #2C3E50;
+            transform: translateY(-2px);
+        }
+
+        .dropbtn:active {
+            background-color: #1A6D6A;
+            transform: translateY(0);
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #ffffff;
+            min-width: 100%;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            z-index: 5;
+            border-radius: 0 0 8px 8px;
+            overflow: hidden;
+        }
+
+        .dropdown-content a {
+            color: #333;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            transition: background-color 0.3s ease;
+        }
+
+        .dropdown-content a:hover {
+            background-color: #f1f1f1;
+        }
+
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropdown.show .dropdown-content {
+            display: block;
+        }
+
+        #name-display {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(72, 167, 163, 0.8);
+            color: #ffffff;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 18px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            z-index: 5;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            opacity: 0;
+        }
+
+        #name-display.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <div id="map">
+        <div id="ball"></div>
+    </div>
+    <div id="minimap-container">
+        <div id="minimap"></div>
+    </div>
+    <div class="anime-container"></div>
+    <div id="settings-button">Settings</div>
+    <div class="settings-tabs">
+        <div class="settings-tab active" data-section="options">Options</div>
+        <div class="settings-tab" data-section="theme">Theme</div>
+    </div>
+    <div id="settings-panel">
+        <div id="options-section" class="settings-section active">
+            <div class="settings-option">
+                <input type="checkbox" id="showGrid" checked />
+                <label for="showGrid">Show Grid</label>
+            </div>
+        </div>
+        <div id="theme-section" class="settings-section">
+            <div class="settings-option">
+                <div class="dropdown">
+                    <button class="dropbtn">Theme Options</button>
+                    <div class="dropdown-content">
+                        <a href="#" id="lightTheme">Light Theme</a>
+                        <a href="#" id="darkTheme">Dark Theme</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="name-display"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+    <script>
+// Select elements
+const ball = document.getElementById('ball');
+const map = document.getElementById('map');
+const minimap = document.getElementById('minimap');
+const container = document.querySelector(".anime-container");
+const settingsButton = document.getElementById('settings-button');
+const settingsPanel = document.getElementById('settings-panel');
+const showGridCheckbox = document.getElementById('showGrid');
+const showDarkThemeCheckbox = document.getElementById('darkTheme');
+
+// Constants
+const ballSize = 50;
+const mapSize = 4000;
+const minimapSize = 150;
+const minimapScale = minimapSize / mapSize; // Minimap scale
+const movementSpeed = 3; // Slightly slower movement speed
+const shapeSize = 30; // Size of the shapes
+const gridSize = 25; // Smaller grid size (25px by 25px grid)
+const trailInterval = 100; // Increased interval for trail effect in milliseconds
+const midSize = 1200; // Mid area size
+
+let x = (mapSize - ballSize) / 2;
+let y = (mapSize - ballSize) / 2;
+
+// Clamp position to ensure it's within bounds
+x = Math.max(0, Math.min(x, mapSize - ballSize));
+y = Math.max(0, Math.min(y, mapSize - ballSize));
+
+// Create minimap ball
+const minimapBall = document.createElement('div');
+minimapBall.classList.add('minimap-ball');
+minimap.appendChild(minimapBall);
+
+// Debounce savePosition to avoid excessive writes to localStorage
+const debounce = (fn, delay) => {
+    let timeoutId;
+    return (...args) => {
+        clearTimeout(timeoutId);
+        timeoutId = setTimeout(() => fn(...args), delay);
+    };
+};
+
+const savePosition = debounce(() => {
+    localStorage.setItem('ballX', x);
+    localStorage.setItem('ballY', y);
+}, 300);
+
+// Center camera on the ball
+function centerCamera() {
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+
+    const offsetX = x + ballSize / 2 - viewportWidth / 2;
+    const offsetY = y + ballSize / 2 - viewportHeight / 2;
+
+    map.style.transform = `translate(${-offsetX}px, ${-offsetY}px)`;
+    ball.style.transform = `translate(0, 0)`;
+}
+
+// Update minimap
+function updateMinimap() {
+    const scaledX = x * minimapScale;
+    const scaledY = y * minimapScale;
+
+    minimapBall.style.left = `${scaledX}px`;
+    minimapBall.style.top = `${scaledY}px`;
+}
+
+// Update ball position and visuals
+function updateBallPosition() {
+    ball.style.left = `${x}px`;
+    ball.style.top = `${y}px`;
+
+    centerCamera();
+    updateMinimap();
+}
+
+// Set initial ball position and update visuals
+updateBallPosition();
+
+// Key states for smooth movement
+const keys = {};
+
+window.addEventListener('keydown', (e) => {
+    keys[e.key] = true;
+});
+
+window.addEventListener('keyup', (e) => {
+    keys[e.key] = false;
+});
+
+// Create the grid
+function createGrid() {
+    const fragment = document.createDocumentFragment();
+    for (let i = 0; i <= mapSize; i += gridSize * 1) { // Increase grid size to reduce number of lines
+        // Horizontal lines
+        const horizontalLine = document.createElement('div');
+        horizontalLine.classList.add('grid-line');
+        horizontalLine.style.width = `${mapSize}px`;
+        horizontalLine.style.height = '1px';
+        horizontalLine.style.top = `${i}px`;
+        fragment.appendChild(horizontalLine);
+
+        // Vertical lines
+        const verticalLine = document.createElement('div');
+        verticalLine.classList.add('grid-line');
+        verticalLine.style.width = '1px';
+        verticalLine.style.height = `${mapSize}px`;
+        verticalLine.style.left = `${i}px`;
+        fragment.appendChild(verticalLine);
+    }
+    map.appendChild(fragment);
+}
+
+// Create trail effect (updated with jumbled dots)
+function createTrail() {
+    const numDots = 0.2; // Number of dots per trail effect
+    for (let i = 0; i < numDots; i++) {
+        // Create a dot
+        const trailDot = document.createElement('div');
+        trailDot.classList.add('trail');
+        map.appendChild(trailDot);
+
+        // Randomize size of the trail dot
+        const size = anime.random(6, 13);  // Random size between 3px to 10px
+        trailDot.style.width = `${size}px`;
+        trailDot.style.height = `${size}px`;
+
+        // Randomize position of the dot around the ball's current position
+        const offsetX = anime.random(-20, 18);
+        const offsetY = anime.random(-20, 18);
+
+        // Set the position based on the ball's current position
+        trailDot.style.left = `${x + ballSize / 2 - size / 2 + offsetX}px`;
+        trailDot.style.top = `${y + ballSize / 2 - size / 2 + offsetY}px`;
+
+        // Apply opacity and randomize animation
+        trailDot.style.opacity = "1";
+
+        // Animate the trail dot to fade out and move
+        anime({
+            targets: trailDot,
+            opacity: 0,                    // Fade out the dot
+            scale: anime.random(0.2, 1),    // Random scale for more randomness
+            translateX: anime.random(-50, 50),  // Random horizontal movement
+            translateY: anime.random(-50, 50),  // Random vertical movement
+            duration: anime.random(2700, 3000), // Duration for the animation (longer to let the trail last)
+            easing: "easeOutQuad",
+            complete: function() {
+                trailDot.remove();  // Remove the trail dot after the animation completes
+            }
+        });
+
+        // Create corresponding minimap trail dot
+        createMinimapTrail(trailDot);
+    }
+}
+
+// Create minimap trail dot
+function createMinimapTrail(trailDot) {
+    const minimapTrailDot = document.createElement('div');
+    minimapTrailDot.classList.add('minimap-trail');
+    minimap.appendChild(minimapTrailDot);
+
+    // Scale the position and size for the minimap
+    const scaledX = parseFloat(trailDot.style.left) * minimapScale;
+    const scaledY = parseFloat(trailDot.style.top) * minimapScale;
+    const scaledSize = parseFloat(trailDot.style.width) * minimapScale;
+
+    minimapTrailDot.style.left = `${scaledX}px`;
+    minimapTrailDot.style.top = `${scaledY}px`;
+    minimapTrailDot.style.width = `${scaledSize}px`;
+    minimapTrailDot.style.height = `${scaledSize}px`;
+
+    // Animate the minimap trail dot to fade out and move
+    anime({
+        targets: minimapTrailDot,
+        opacity: 0,                    // Fade out the dot
+        scale: anime.random(0.2, 1),    // Random scale for more randomness
+        translateX: anime.random(-10, 10),  // Random horizontal movement
+        translateY: anime.random(-10, 10),  // Random vertical movement
+        duration: anime.random(1200, 2500), // Duration for the animation (longer to let the trail last)
+        easing: "easeOutQuad",
+        complete: function() {
+            minimapTrailDot.remove();  // Remove the trail dot after the animation completes
+        }
+    });
+}
+
+// Create shapes
+function createShapes() {
+    const fragment = document.createDocumentFragment();
+    const midStart = (mapSize - midSize) / 2;
+    const midEnd = midStart + midSize;
+
+    for (let i = 0; i < 100; i++) {
+        const shapeType = getRandomShape();
+        let posX, posY;
+
+        if (shapeType === 'pentagon' || shapeType === 'hexagon') {
+            // Spawn in mid area
+            posX = Math.random() * midSize + midStart;
+            posY = Math.random() * midSize + midStart;
+        } else {
+            // Spawn outside mid area
+            do {
+                posX = Math.random() * mapSize;
+                posY = Math.random() * mapSize;
+            } while (posX >= midStart && posX <= midEnd && posY >= midStart && posY <= midEnd);
+        }
+        const shape = document.createElement('canvas');
+        shape.style.position = 'absolute';
+        shape.style.left = `${posX}px`;
+        shape.style.top = `${posY}px`;
+
+        const ctx = shape.getContext('2d');
+        drawShape(ctx, shapeType, shape);
+
+        map.appendChild(shape); // Append shape directly to the map
+        fragment.appendChild(shape);
+    }
+
+    map.appendChild(fragment);
+}
+
+// Get random shape with weighted probabilities
+function getRandomShape() {
+    const rand = Math.random();
+    if (rand < 0.4) return 'egg';
+    if (rand < 0.7) return 'square';
+    if (rand < 0.9) return 'triangle';
+    if (rand < 0.95) return 'pentagon';
+    return 'hexagon';
+}
+
+// Draw shape on canvas
+function drawShape(ctx, shapeType, shape) {
+    ctx.beginPath();
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = 'black';
+    switch (shapeType) {
+        case 'egg':
+            shape.width = 10;
+            shape.height = 10;
+            ctx.arc(5, 5, 5, 0, Math.PI * 2);
+            ctx.fillStyle = '#d3d3d3'; // Slightly lighter color
+            ctx.fill();
+            ctx.stroke();
+            break;
+        case 'square':
+            shape.width = 30;
+            shape.height = 30;
+            ctx.rect(0, 0, 30, 30);
+            ctx.fillStyle = '#ffeb12';
+            ctx.fill();
+            ctx.stroke();
+            break;
+        case 'triangle':
+            shape.width = 31;
+            shape.height = 31;
+            ctx.moveTo(15.5, 0);
+            ctx.lineTo(31, 31);
+            ctx.lineTo(0, 31);
+            ctx.closePath();
+            ctx.fillStyle = '#ff4112';
+            ctx.fill();
+            ctx.stroke();
+            break;
+        case 'pentagon':
+            shape.width = 45;
+            shape.height = 45;
+            drawPolygon(ctx, 5, 22.5, 22.5, 22.5);
+            ctx.fillStyle = '#b747fc';
+            ctx.fill();
+            ctx.stroke();
+            break;
+        case 'hexagon':
+            shape.width = 50;
+            shape.height = 50;
+            drawPolygon(ctx, 6, 25, 25, 25);
+            ctx.fillStyle = '#47fcb7';
+            ctx.fill();
+            ctx.stroke();
+            break;
+    }
+}
+
+// Draw polygon
+function drawPolygon(ctx, sides, x, y, radius) {
+    const angle = Math.PI * 2 / sides;
+    ctx.moveTo(x + radius * Math.cos(0), y + radius * Math.sin(0));
+    for (let i = 1; i < sides; i++) {
+        ctx.lineTo(x + radius * Math.cos(i * angle), y + radius * Math.sin(i * angle));
+    }
+    ctx.closePath();
+}
+
+// Main game loop
+function gameLoop() {
+    let dx = 0;
+    let dy = 0;
+
+    if (keys['w'] || keys['ArrowUp']) dy -= 1;
+    if (keys['a'] || keys['ArrowLeft']) dx -= 1;
+    if (keys['s'] || keys['ArrowDown']) dy += 1;
+    if (keys['d'] || keys['ArrowRight']) dx += 1;
+
+    // Normalize the movement vector
+    const length = Math.sqrt(dx * dx + dy * dy);
+    if (length > 0) {
+        dx = (dx / length) * movementSpeed;
+        dy = (dy / length) * movementSpeed;
+        createTrail(); // Create trail only when moving
+    }
+
+    x = Math.max(0, Math.min(mapSize - ballSize, x + dx));
+    y = Math.max(0, Math.min(mapSize - ballSize, y + dy));
+
+    updateBallPosition();
+    savePosition();
+    requestAnimationFrame(gameLoop);
+}
+
+// Initialize
+function init() {
+    ball.style.width = `${ballSize}px`;
+    ball.style.height = `${ballSize}px`;
+    createGrid(); // Create the grid
+    createShapes(); // Create shapes
+    updateBallPosition();
+    gameLoop();
+}
+
+// Adjust camera on window resize
+window.addEventListener('resize', centerCamera);
+
+// Select elements
+const settingsTabs = document.querySelector('.settings-tabs');
+const tabs = document.querySelectorAll('.settings-tab'); // Make sure to get all tabs
+const sections = document.querySelectorAll('.settings-section');
+
+tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+        // Remove active class from all tabs
+        tabs.forEach(t => t.classList.remove('active'));
+        // Add active class to the clicked tab
+        tab.classList.add('active');
+
+        // Hide all sections
+        sections.forEach(section => section.classList.remove('active'));
+        // Show the corresponding section
+        const sectionId = tab.getAttribute('data-section');
+        document.getElementById(`${sectionId}-section`).classList.add('active');
+    });
+});
+
+// Toggle settings panel visibility
+settingsButton.addEventListener('click', () => {
+    if (settingsPanel.classList.contains('show')) {
+        // If the panel is already visible, hide it
+        settingsPanel.classList.remove('show');
+        settingsTabs.classList.remove('show'); // Hide the tabs
+    } else {
+        // If the panel is hidden, show it
+        settingsPanel.classList.add('show');
+        settingsTabs.classList.add('show'); // Show the tabs
+
+        // Reset active tab and section
+        tabs.forEach(tab => tab.classList.remove('active'));
+        sections.forEach(section => section.classList.remove('active'));
+
+        // Set the default active tab to "options" and show the options section
+        document.querySelector('.settings-tab[data-section="options"]').classList.add('active');
+        document.getElementById('options-section').classList.add('active');
+    }
+});
+
+// Handle settings changes
+showGridCheckbox.addEventListener('change', () => {
+    const gridLines = document.querySelectorAll('.grid-line');
+    gridLines.forEach(line => {
+        line.style.display = showGridCheckbox.checked ? 'block' : 'none';
+    });
+});
+
+showDarkThemeCheckbox.addEventListener('change', () => {
+    map.style.backgroundColor = showDarkThemeCheckbox.checked ? 'white' : 'transparent';
+});
+
+function displayName(name) {
+    const nameDisplay = document.getElementById('name-display');
+    nameDisplay.textContent = name;
+    nameDisplay.classList.add('show');
+}
+
+// Get name from session storage
+let playerName = localStorage.getItem('playerName');
+if (playerName) {
+    // Display the name
+    displayName(playerName);
+} else {
+    // If name is not found in localStorage, redirect to the dashboard
+    window.location.href = 'dashboard'; // You might need to change this depending on your routing setup
+}
+
+// Start the game
+            init();
+        </script>
+    </body>
+    </html>
