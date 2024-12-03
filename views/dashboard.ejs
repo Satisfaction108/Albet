@@ -1,0 +1,1266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Homepage</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Roboto', sans-serif;
+            background: url('https://cdn.glitch.global/1caa0d6c-909c-4be5-b690-949e87ee6654/dashboard.webp?v=1729440951202') no-repeat center center fixed;
+            background-size: cover;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            overflow-y: auto;
+        }
+
+        .container {
+            text-align: center;
+            width: 90%;
+            max-width: 1200px;
+            padding: 40px;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(10px);
+            margin-top: 20px;
+        }
+
+        h1 {
+            font-size: 3.5em;
+            margin-bottom: 20px;
+            color: #00ccff;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        p {
+            font-size: 1.3em;
+            margin-bottom: 30px;
+            color: #00ccff;
+        }
+
+        input[type="text"] {
+            width: 80%;
+            max-width: 400px;
+            padding: 15px;
+            margin-bottom: 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.1em;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+        }
+
+        input[type="text"]::placeholder {
+            color: #ccc;
+        }
+
+        button {
+            padding: 15px 30px;
+            font-size: 1.2em;
+            border: none;
+            border-radius: 5px;
+            background: #00ccff;
+            color: #000;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.3s;
+        }
+
+        button:hover {
+            background: #00b3e6;
+            transform: scale(1.05);
+        }
+
+        .features {
+            margin-top: 40px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .feature {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 300px;
+        }
+
+        .feature-icon {
+            font-size: 2.5em;
+            margin-right: 15px;
+            color: #00ccff;
+        }
+
+        .feature-text {
+            font-size: 1.2em;
+            color: #00ccff;
+        }
+
+        footer {
+            margin-top: 40px;
+            font-size: 0.9em;
+            color: #aaa;
+        }
+
+        .social-icons {
+            margin-top: 20px;
+        }
+
+        .social-icon {
+            font-size: 1.5em;
+            margin: 0 10px;
+            color: grey;
+            transition: color 0.3s;
+        }
+
+        .social-icon:hover {
+            color: black;
+        }
+
+        .social-icon i {
+            pointer-events: none;
+        }
+
+        .menu-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            padding: 10px 20px;
+            font-size: 1em;
+            border: none;
+            border-radius: 5px;
+            background: #003366;
+            color: #fff;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.3s;
+            z-index: 1000;
+        }
+
+        .menu-button:hover {
+            background: #004080;
+            transform: scale(1.05);
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: -290px;
+            width: 250px;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            padding: 20px;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.5);
+            transition: left 0.3s;
+            z-index: 999;
+        }
+
+        .sidebar.active {
+            left: 0;
+        }
+
+        .sidebar button {
+            display: block;
+            width: 100%;
+            margin-bottom: 10px;
+            padding: 10px;
+            font-size: 1em;
+            border: none;
+            border-radius: 5px;
+            background: #003366;
+            color: #fff;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.3s;
+        }
+
+        .sidebar button:nth-of-type(2) {
+            margin-top: 50px;
+        }
+
+        .sidebar button:hover {
+            background: #004080;
+            transform: scale(1.05);
+        }
+
+        .close-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: auto;
+            height: auto;
+            padding: 5px 10px;
+            font-size: 20px;
+            border: none;
+            border-radius: 50%;
+            background: #ff4444;
+            color: #fff;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.3s;
+            z-index: 1001;
+        }
+
+        .close-button:hover {
+            background: #ff5555;
+            transform: scale(1.1);
+        }
+
+        .content {
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.5s ease-in-out, visibility 0s linear 0.5s;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            margin-top: 20px;
+        }
+
+        .content.active {
+            opacity: 1;
+            visibility: visible;
+            transition: opacity 0.2s ease-in-out, visibility 0s linear 0s;
+        }
+
+        .content.account,
+        .content.settings,
+        .content.shop,
+        .content.statistics,
+        .content.other-games,
+        .content.achievements {
+            background: rgba(0, 0, 0, 0.7);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content {
+            background-color: #003366;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 500px;
+            border-radius: 10px;
+            text-align: center;
+            color: #fff;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: #fff;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .modal img {
+            border-radius: 50%;
+            width: 150px;
+            height: 150px;
+        }
+
+        .content.account,
+        .content.settings,
+        .content.shop,
+        .content.statistics,
+        .content.other-games,
+        .content.achievements {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80%;
+            max-width: 600px;
+            padding: 30px;
+            background: rgba(0, 0, 0, 0.9);
+            border-radius: 15px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+            color: #fff;
+            text-align: center;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+            pointer-events: none;
+            max-height: 80%;
+            overflow-y: auto;
+        }
+
+        .content.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .content.fade-out {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .content h2 {
+            font-size: 2.5em;
+            margin-bottom: 25px;
+            color: #00ccff;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .content p {
+            font-size: 1.3em;
+            margin-bottom: 25px;
+            color: #ccc;
+        }
+
+        .content img {
+            border-radius: 50%;
+            width: 150px;
+            height: 150px;
+            margin-bottom: 25px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .content button {
+            padding: 15px 30px;
+            font-size: 1.2em;
+            border: none;
+            border-radius: 10px;
+            background: #00ccff;
+            color: #000;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.3s;
+        }
+
+        .content button:hover {
+            background: #00b3e6;
+            transform: scale(1.05);
+        }
+
+        .content button:active {
+            background: #0099cc;
+            transform: scale(1);
+        }
+
+        .content .close-button {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            width: 10px;
+            height: 50px;
+            font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+            font-size: 30px;
+            border: none;
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.3s;
+            z-index: 1001;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .content .close-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+        }
+
+        .content .close-button:active {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1);
+        }
+
+        .content.shop {
+            background: rgba(0, 0, 0, 0.7);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            margin-top: 20px;
+        }
+
+        .content.shop h2 {
+            font-size: 2.5em;
+            margin-bottom: 25px;
+            color: #00ccff;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .content.shop p {
+            font-size: 1.3em;
+            margin-bottom: 25px;
+            color: #ccc;
+        }
+
+        .content.shop .item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            margin-bottom: 20px;
+        }
+
+        .content.shop .item img {
+            width: 100px;
+            height: 100px;
+            border-radius: 10px;
+            margin-right: 20px;
+        }
+
+        .content.shop .item .item-details {
+            flex: 1;
+        }
+
+        .content.shop .item .item-details h3 {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+            color: #00ccff;
+        }
+
+        .content.shop .item .item-details p {
+            font-size: 1.2em;
+            color: #ccc;
+        }
+
+        .content.shop .item .item-details .price {
+            font-size: 1.2em;
+            color: #00ccff;
+            margin-top: 10px;
+        }
+
+        .content.shop .item .item-details button {
+            padding: 10px 20px;
+            font-size: 1em;
+            border: none;
+            border-radius: 5px;
+            background: #00ccff;
+            color: #000;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.3s;
+        }
+
+        .content.shop .item .item-details button:hover {
+            background: #00b3e6;
+            transform: scale(1.05);
+        }
+
+        .content .form-group {
+            margin-bottom: 20px;
+        }
+
+        .content .form-group label {
+            display: block;
+            font-size: 1.2em;
+            margin-bottom: 10px;
+            color: #00ccff;
+        }
+
+        .content .form-group input[type="checkbox"] {
+            display: none;
+        }
+
+        .content .form-group input[type="checkbox"] + label {
+            position: relative;
+            padding-left: 35px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .content .form-group input[type="checkbox"] + label::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 25px;
+            height: 25px;
+            border: 2px solid #00ccff;
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .content .form-group input[type="checkbox"]:checked + label::before {
+            background: #00ccff;
+            border-color: #00ccff;
+        }
+
+        .content .form-group input[type="checkbox"]:checked + label::after {
+            content: '✔';
+            position: absolute;
+            left: 5px;
+            top: 0;
+            font-size: 20px;
+            color: #000;
+        }
+
+        .content .form-group input,
+        .content .form-group select,
+        .content .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            font-size: 1em;
+            border: none;
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .content .form-group input::placeholder,
+        .content .form-group textarea::placeholder {
+            color: #ccc;
+        }
+
+        .content .form-group select {
+            appearance: none;
+            background: rgba(255, 255, 255, 0.2) url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgdmlld0JveD0iMCAwIDE2IDE2Ij4KICA8cGF0aCBkPSJNNC4yOTMgNi4yOTNsNC4yOTMgNC4yOTMgNC4yOTMtNC4yOTMgMS40MTQgMS40MTRsLTUuNzA3IDUuNzA3LTUuNzA3eiIvPgo8L3N2Zz4K') no-repeat right 10px center;
+            background-size: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .content .form-group select option {
+            background: rgba(0, 0, 0, 0.9);
+            color: #fff;
+        }
+
+        .content .form-group select:focus {
+            outline: none;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .content .form-group select:focus option {
+            background: rgba(0, 0, 0, 0.9);
+        }
+
+        .content .form-group select:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .content .form-group input[type="range"] {
+            width: 100%;
+            -webkit-appearance: none;
+            appearance: none;
+            background: rgba(255, 255, 255, 0.2);
+            height: 10px;
+            border-radius: 5px;
+            outline: none;
+            transition: background 0.3s ease;
+        }
+
+        .content .form-group input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: #00ccff;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            transition: background 0.3s ease;
+        }
+
+        .content .form-group input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: #00ccff;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            transition: background 0.3s ease;
+        }
+
+        .content .form-group input[type="range"]::-webkit-slider-thumb:hover,
+        .content .form-group input[type="range"]::-moz-range-thumb:hover {
+            background: #00b3e6;
+        }
+
+        .content .form-group input[type="range"]::-webkit-slider-thumb:active,
+        .content .form-group input[type="range"]::-moz-range-thumb:active {
+            background: #0099cc;
+        }
+
+        .content .form-group input[type="range"] + .range-value {
+            display: block;
+            text-align: center;
+            margin-top: 10px;
+            font-size: 1.2em;
+            color: #00ccff;
+        }
+
+        .content .form-group textarea {
+            resize: vertical;
+        }
+
+        .content .form-group input[type="text"],
+        .content .form-group input[type="email"],
+        .content .form-group input[type="password"] {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            font-size: 1em;
+            border: none;
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            margin-bottom: 20px;
+        }
+
+        .content .form-group input[type="text"]::placeholder,
+        .content .form-group input[type="email"]::placeholder,
+        .content .form-group input[type="password"]::placeholder {
+            color: #ccc;
+        }
+
+        .content .form-group input[type="text"]:focus,
+        .content .form-group input[type="email"]:focus,
+        .content .form-group input[type="password"]:focus {
+            outline: none;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .content .form-group input[type="text"]:hover,
+        .content .form-group input[type="email"]:hover,
+        .content .form-group input[type="password"]:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .content .form-group input[type="submit"] {
+            padding: 15px 30px;
+            font-size: 1.2em;
+            border: none;
+            border-radius: 5px;
+            background: #00ccff;
+            color: #000;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.3s;
+        }
+
+        .content .form-group input[type="submit"]:hover {
+            background: #00b3e6;
+            transform: scale(1.05);
+        }
+
+        .content .form-group input[type="submit"]:active {
+            background: #0099cc;
+            transform: scale(1);
+        }
+
+        .notification {
+            position: fixed;
+            top: 10px;
+            right: 50%;
+            transform: translateX(50%);
+            background: #00ccff;
+            color: #000;
+            padding: 15px 30px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            font-size: 1.2em;
+            z-index: 1001;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        .notification.show {
+            opacity: 1;
+        }
+
+        .notification.hide {
+            opacity: 0;
+        }
+        .cart {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.9);
+            color: #fff;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            max-width: 350px;
+            display: none;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .cart.active {
+            display: flex;
+        }
+
+        .cart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 1.5em;
+            border-bottom: 2px solid #00ccff;
+            padding-bottom: 10px;
+        }
+
+        .cart-items {
+            flex: 1;
+            overflow-y: auto;
+            max-height: 250px;
+            margin-top: 10px;
+        }
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #00ccff;
+            outline: 1px solid #00ccff;
+        }
+
+        .cart-item:last-child {
+            border-bottom: none;
+        }
+
+        .cart-item-name {
+            font-size: 1.2em;
+        }
+
+        .cart-item-price {
+            font-size: 1.2em;
+            color: #00ccff;
+        }
+
+        .cart-total {
+            font-size: 1.5em;
+            text-align: right;
+            margin-top: 10px;
+        }
+
+        .cart-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        .cart-buttons button {
+            padding: 10px 20px;
+            font-size: 1em;
+            border: none;
+            border-radius: 5px;
+            background: #00ccff;
+            color: #000;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.3s;
+        }
+
+        .cart-buttons button:hover {
+            background: #00b3e6;
+            transform: scale(1.05);
+        }
+
+        .content.shop .item .item-details .price {
+            font-size: 1.2em;
+            color: #00ccff;
+            margin-top: 10px;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <button class="menu-button" id="menuButton" onclick="toggleSidebar()">Menu</button>
+    <div class="sidebar" id="sidebar">
+        <button class="close-button" onclick="toggleSidebar()">Close Menu</button>
+        <button id="accountButton" onclick="showContent('account')">Account</button>
+        <button id="settingsButton" onclick="showContent('settings')">Settings</button>
+        <button id="shopButton" onclick="showContent('shop')">Shop</button>
+        <button id="statisticsButton" onclick="showContent('statistics')">Statistics</button>
+        <button id="otherGamesButton" onclick="showContent('other-games')">Other Games</button>
+        <button id="achievementsButton" onclick="showContent('achievements')">Achievements</button>
+    </div>
+    <div class="content account">
+        <button class="close-button" onclick="closeContent('account')">x</button>
+        <h2>Account</h2>
+        <img src="<%= profilePic %>" alt="Profile Picture" style="border-radius: 50%; width: 150px; height: 150px;">
+        <p>Name: <%= username %></p>
+        <% if (email) { %>
+            <p>Email: <%= email %></p>
+        <% } %>
+    </div>
+    <div class="content settings">
+        <button class="close-button" onclick="closeContent('settings')">x</button>
+        <h2>Settings</h2>
+        <form>
+            <div style="display: flex; justify-content: space-between;">
+                <div style="flex: 1; margin-right: 10px;">
+                    <div class="form-group">
+                        <input type="checkbox" id="playerNames" name="playerNames" checked>
+                        <label for="playerNames">Player Names</label>
+                    </div>
+                    <div class="form-group">
+                        <input type="checkbox" id="playerScores" name="playerScores" checked>
+                        <label for="playerScores">Player Scores</label>
+                    </div>
+                    <div class="form-group">
+                        <input type="checkbox" id="backgroundGrid" name="backgroundGrid" checked>
+                        <label for="backgroundGrid">Background Grid</label>
+                    </div>
+                    <div class="form-group">
+                        <input type="checkbox" id="sharpEntities" name="sharpEntities">
+                        <label for="sharpEntities">Sharp Entities</label>
+                    </div>
+                    <div class="form-group">
+                        <input type="checkbox" id="chatMessages" name="chatMessages" checked>
+                        <label for="chatMessages">Chat Messages</label>
+                    </div>
+                    <div class="form-group">
+                        <input type="checkbox" id="healthBars" name="healthBars" checked>
+                        <label for="healthBars">Health Bars</label>
+                    </div>
+                    <div class="form-group">
+                        <input type="checkbox" id="separateShieldBars" name="separateShieldBars">
+                        <label for="separateShieldBars">Separate Shield Bars</label>
+                    </div>
+                    <div class="form-group" style="flex: 1; margin-left: 10px;">
+                        <label for="borderColor">Border Color</label>
+                        <input type="color" id="borderColor" name="borderColor" value="#00ccff">
+                    </div>
+                </div>
+                <div style="flex: 1; margin-left: 10px;">
+                    <div class="form-group">
+                        <input type="checkbox" id="upgrades" name="upgrades" checked>
+                        <label for="upgrades">Upgrades</label>
+                    </div>
+                    <div class="form-group">
+                        <input type="checkbox" id="leaderboard" name="leaderboard" checked>
+                        <label for="leaderboard">Leaderboard</label>
+                    </div>
+                    <div class="form-group">
+                        <input type="checkbox" id="music" name="music" checked>
+                        <label for="music">Music</label>
+                    </div>
+                    <div class="form-group">
+                        <input type="checkbox" id="notifications" name="notifications" checked>
+                        <label for="notifications">Notifications</label>
+                    </div>
+                    <div class="form-group">
+                        <input type="checkbox" id="darkMode" name="darkMode">
+                        <label for="darkMode">Dark Mode</label>
+                    </div>
+                    <div class="form-group">
+                        <input type="checkbox" id="showFPS" name="showFPS">
+                        <label for="showFPS">Show FPS</label>
+                    </div>
+                    <div class="form-group">
+                        <input type="checkbox" id="autoSave" name="autoSave">
+                        <label for="autoSave">Auto Save</label>
+                    </div>
+                    <div class="form-group" style="flex: 1; margin-right: 10px;">
+                        <label for="borderThickness">Border Thickness</label>
+                        <input type="range" id="borderThickness" name="borderThickness" min="1" max="10" value="5">
+                    </div>
+                </div>
+            </div>
+            <button type="submit" onclick="showNotification()">Save Settings</button>
+            <div class="notification" id="notification">Settings saved</div>
+        </form>
+    </div>
+        <script>
+            function showNotification() {
+                const notification = document.getElementById('notification');
+                notification.classList.add('show');
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                }, 3000);
+            }
+        </script>
+    </div>
+    <div class="content shop">
+        <button class="close-button" onclick="closeContent('shop')">x</button>
+        <h2>Shop</h2>
+        <p>Purchase in-game items and upgrades.</p>
+        <div class="item">
+            <img src="https://media.istockphoto.com/id/1332135331/vector/button-for-online-donate-line-icon-donation-with-click-linear-pictogram-support-and-give.jpg?s=612x612&w=0&k=20&c=nWbBTKXknStqgg4BFx78O8g-RImD9URctkbZ49Kgjqk=" alt="Item 1">
+            <div class="item-details">
+                <h3>Donation</h3>
+                <p>Donate to support Albet.cc's developers!</p>
+                <p>Donation Amount: </p>
+                <div class="price" style="margin-top: 10px;">$10</div>
+                <button style="margin-top: 10px;">Add to Cart</button>
+            </div>
+        </div>
+    </div>
+    <div class="content statistics">
+        <button class="close-button" onclick="closeContent('statistics')">x</button>
+        <h2>Statistics</h2>
+        <p>View your game statistics and progress.</p>
+    </div>
+    <div class="content other-games">
+        <button class="close-button" onclick="closeContent('other-games')">x</button>
+        <h2>Other Games</h2>
+        <p>Discover and play other games.</p>
+    </div>
+    <div class="content achievements">
+        <button class="close-button" onclick="closeContent('achievements')">x</button>
+        <h2>Achievements</h2>
+        <p>View and manage your achievements.</p>
+    </div>
+    <div class="cart" id="cart">
+        <div class="cart-header">
+            <span>Cart</span>
+            <button class="close-button" onclick="toggleCart()">x</button>
+        </div>
+        <div class="cart-items" id="cartItems"></div>
+        <div class="cart-total" id="cartTotal">Total: $0</div>
+        <div class="cart-buttons">
+            <button onclick="checkout()" style="margin-right: 10px;">Checkout</button>
+            <button onclick="clearCart()">Clear Cart</button>
+        </div>
+    </div>
+    <div class="container">
+        <h1>Albet.cc</h1>
+        <p>Enter your name to start playing!</p>
+        <input type="text" placeholder="Enter your name" id="playerName" onkeypress="handleKeyPress(event)">
+        <button onclick="startGame()">Play Now</button>
+        <div class="features">
+            <div class="feature">
+                <div class="feature-icon"><i class="fas fa-gamepad"></i></div>
+                <div class="feature-text">Play to win modules and defeat other players!</div>
+            </div>
+            <div class="feature">
+                <div class="feature-icon"><i class="fas fa-globe"></i></div>
+                <div class="feature-text">Play with friends online</div>
+            </div>
+            <div class="feature">
+                <div class="feature-icon"><i class="fas fa-comments"></i></div>
+                <div class="feature-text">Chat with other players</div>
+            </div>
+            <div class="feature">
+                <div class="feature-icon"><i class="fas fa-cogs"></i></div>
+                <div class="feature-text">Customize your avatar and settings</div>
+            </div>
+            <div class="feature">
+                <div class="feature-icon"><i class="fas fa-chart-line"></i></div>
+                <div class="feature-text">Track your progress and stats</div>
+            </div>
+            <div class="feature">
+                <div class="feature-icon"><i class="fas fa-user-friends"></i></div>
+                <div class="feature-text">Join clans and teams</div>
+            </div>
+            <div class="feature">
+                <div class="feature-icon"><i class="fas fa-gift"></i></div>
+                <div class="feature-text">Earn rewards and achievements</div>
+            </div>
+            <div class="feature">
+                <div class="feature-icon"><i class="fas fa-store"></i></div>
+                <div class="feature-text">Visit the in-game store</div>
+            </div>
+            <div class="feature">
+                <div class="feature-icon"><i class="fas fa-bullhorn"></i></div>
+                <div class="feature-text">Stay updated with the latest news</div>
+            </div>
+            <div class="feature">
+                <div class="feature-icon"><i class="fas fa-question-circle"></i></div>
+                <div class="feature-text">Get help and support</div>
+            </div>
+            <div class="feature">
+                <div class="feature-icon"><i class="fas fa-music"></i></div>
+                <div class="feature-text">Enjoy in-game music and soundtracks</div>
+            </div>
+            <div class="feature">
+                <div class="feature-icon"><i class="fas fa-heart"></i></div>
+                <div class="feature-text">Support your favorite Albet Youtubers!</div>
+            </div>
+            <div class="feature">
+                <div class="feature-icon"><i class="fas fa-star"></i></div>
+                <div class="feature-text">Rate and review Albet.cc!</div>
+            </div>
+            <div class="feature">
+                <div class="feature-icon"><i class="fas fa-rocket"></i></div>
+                <div class="feature-text">Experience new game modes</div>
+            </div>
+            <div class="feature">
+                <div class="feature-icon"><i class="fas fa-map"></i></div>
+                <div class="feature-text">Explore new maps and levels</div>
+            </div>
+            <div class="feature">
+                <div class="feature-icon"><i class="fas fa-crown"></i></div>
+                <div class="feature-text">Become the ultimate champion</div>
+            </div>
+        </div>
+        <footer>
+            &copy; 2023 Albet. All rights reserved.
+            <div class="social-icons">
+                <a href="#" class="social-icon"><i class="fab fa-reddit"></i></a>
+                <a href="#" class="social-icon"><i class="fab fa-discord"></i></a>
+                <a href="#" class="social-icon"><i class="fab fa-youtube"></i></a>
+            </div>
+        </footer>
+    </div>
+    <script>
+    async function saveSettings() {
+        const settings = {
+            playerNames: document.querySelector('input[name="playerNames"]').checked,
+            playerScores: document.querySelector('input[name="playerScores"]').checked,
+            backgroundGrid: document.querySelector('input[name="backgroundGrid"]').checked,
+            sharpEntities: document.querySelector('input[name="sharpEntities"]').checked,
+            chatMessages: document.querySelector('input[name="chatMessages"]').checked,
+            healthBars: document.querySelector('input[name="healthBars"]').checked,
+            separateShieldBars: document.querySelector('input[name="separateShieldBars"]').checked,
+            leaderboard: document.querySelector('input[name="leaderboard"]').checked,
+            borderThickness: document.querySelector('input[name="borderThickness"]').value
+        };
+
+        try {
+            const response = await fetch('/save-settings', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(settings)
+            });
+
+            if (response.ok) {
+                alert('Settings saved!');
+            } else {
+                alert('Failed to save settings.');
+            }
+        } catch (error) {
+            console.error('Error saving settings:', error);
+            alert('Error saving settings.');
+        }
+    }
+
+    async function loadSettings() {
+        try {
+            const response = await fetch('/load-settings');
+            if (response.ok) {
+                const settings = await response.json();
+                document.querySelector('input[name="playerNames"]').checked = settings.playerNames;
+                document.querySelector('input[name="playerScores"]').checked = settings.playerScores;
+                document.querySelector('input[name="backgroundGrid"]').checked = settings.backgroundGrid;
+                document.querySelector('input[name="sharpEntities"]').checked = settings.sharpEntities;
+                document.querySelector('input[name="chatMessages"]').checked = settings.chatMessages;
+                document.querySelector('input[name="healthBars"]').checked = settings.healthBars;
+                document.querySelector('input[name="separateShieldBars"]').checked = settings.separateShieldBars;
+                document.querySelector('input[name="leaderboard"]').checked = settings.leaderboard;
+                document.querySelector('input[name="borderThickness"]').value = settings.borderThickness;
+            } else {
+                console.error('Failed to load settings.');
+            }
+        } catch (error) {
+            console.error('Error loading settings:', error);
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        loadSettings();
+        document.querySelector('#settingsForm').addEventListener('submit', (event) => {
+            event.preventDefault();
+            saveSettings();
+        });
+    });
+        function saveSettings() {
+            const settings = {
+                playerNames: document.querySelector('input[name="playerNames"]').checked,
+                playerScores: document.querySelector('input[name="playerScores"]').checked,
+                backgroundGrid: document.querySelector('input[name="backgroundGrid"]').checked,
+                sharpEntities: document.querySelector('input[name="sharpEntities"]').checked,
+                chatMessages: document.querySelector('input[name="chatMessages"]').checked,
+                healthBars: document.querySelector('input[name="healthBars"]').checked,
+                separateShieldBars: document.querySelector('input[name="separateShieldBars"]').checked,
+                leaderboard: document.querySelector('input[name="leaderboard"]').checked,
+                borderThickness: document.querySelector('input[name="borderThickness"]').value
+            };
+            localStorage.setItem('gameSettings', JSON.stringify(settings));
+        }
+
+        function loadSettings() {
+            const settings = JSON.parse(localStorage.getItem('gameSettings'));
+            if (settings) {
+                document.querySelector('input[name="playerNames"]').checked = settings.playerNames;
+                document.querySelector('input[name="playerScores"]').checked = settings.playerScores;
+                document.querySelector('input[name="backgroundGrid"]').checked = settings.backgroundGrid;
+                document.querySelector('input[name="sharpEntities"]').checked = settings.sharpEntities;
+                document.querySelector('input[name="chatMessages"]').checked = settings.chatMessages;
+                document.querySelector('input[name="healthBars"]').checked = settings.healthBars;
+                document.querySelector('input[name="separateShieldBars"]').checked = settings.separateShieldBars;
+                document.querySelector('input[name="leaderboard"]').checked = settings.leaderboard;
+                document.querySelector('input[name="borderThickness"]').value = settings.borderThickness;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadSettings();
+            document.querySelector('.content.settings form').addEventListener('submit', (event) => {
+                event.preventDefault();
+                saveSettings();
+            });
+        });;
+
+        function startGame(event) {
+            const playerName = document.getElementById('playerName').value;
+            if (playerName) {
+                localStorage.setItem('playerName', playerName);
+                window.location.href = 'game.html'; // Redirect to the game page
+            } else {
+                alert("Please enter a name to start playing.");
+            }
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                startGame();
+            }
+        }
+
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const menuButton = document.getElementById('menuButton');
+            sidebar.classList.toggle('active');
+            if (sidebar.classList.contains('active')) {
+                menuButton.style.display = 'none';
+            } else {
+                setTimeout(() => {
+                    menuButton.style.display = 'block';
+                }, 200);
+            }
+        }
+
+        function showContent(contentId) {
+            document.querySelectorAll('.content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.querySelector(`.content.${contentId}`).classList.add('active');
+        }
+
+        function closeContent(contentId) {
+            document.querySelector(`.content.${contentId}`).classList.remove('active');
+        }
+
+        function configureButton(buttonId, contentId) {
+            const button = document.getElementById(buttonId);
+            button.addEventListener('click', () => {
+                showContent(contentId);
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            configureButton('accountButton', 'account');
+            configureButton('settingsButton', 'settings');
+            configureButton('shopButton', 'shop');
+            configureButton('statisticsButton', 'statistics');
+            configureButton('otherGamesButton', 'other-games');
+            configureButton('achievementsButton', 'achievements');
+        });
+
+        function openModal() {
+            document.getElementById('accountModal').style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('accountModal').style.display = 'none';
+        }
+
+        window.onclick = function(event) {
+            const modal = document.getElementById('accountModal');
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        }
+
+        // Shop script
+// Shop script
+const cart = [];
+
+function addToCart(itemName, itemPrice) {
+    // Check if the item already exists in the cart
+    const existingItem = cart.find(item => item.name === itemName);
+    if (existingItem) {
+        alert(`${itemName} is already in your cart.`);
+        return;
+    }
+
+    const item = { name: itemName, price: parseFloat(itemPrice) };
+    cart.push(item);
+    updateCart();
+}
+
+function updateCart() {
+    const cartItems = document.getElementById('cartItems');
+    const cartTotal = document.getElementById('cartTotal');
+    cartItems.innerHTML = '';
+    let total = 0;
+    cart.forEach(item => {
+        const cartItem = document.createElement('div');
+        cartItem.classList.add('cart-item');
+        cartItem.innerHTML = `<span class="cart-item-name">${item.name}</span><span class="cart-item-price">$${item.price.toFixed(2)}</span>`;
+        cartItems.appendChild(cartItem);
+        total += item.price;
+    });
+    cartTotal.textContent = `Total: $${total.toFixed(2)}`;
+    toggleCart(true);
+}
+
+function toggleCart(forceOpen = false) {
+    const cart = document.getElementById('cart');
+    if (forceOpen) {
+        cart.classList.add('active');
+    } else {
+        cart.classList.toggle('active');
+    }
+}
+
+function clearCart() {
+    cart.length = 0;
+    updateCart();
+    checkoutClicked = false;
+}
+
+document.querySelectorAll('.content.shop .item button').forEach(button => {
+    button.addEventListener('click', (event) => {
+        const item = event.target.closest('.item');
+        const itemName = item.querySelector('h3').textContent;
+        const itemPrice = item.querySelector('.price').textContent.replace('$', '');
+        addToCart(itemName, itemPrice);
+    });
+});
+
+        document.querySelectorAll('.content.shop .item button').forEach(button => {
+            button.addEventListener('click', (event) => {
+                const item = event.target.closest('.item');
+                const itemName = item.querySelector('h3').textContent;
+                const itemPrice = item.querySelector('.price').textContent.replace('$', '');
+                addToCart(itemName, itemPrice);
+            });
+        });
+        document.addEventListener('DOMContentLoaded', () => {
+            loadSettings();
+            document.querySelector('#settingsForm').addEventListener('submit', (event) => {
+            event.preventDefault();
+            saveSettings();
+            });
+        });
+        </script>
+        </body>
+    </html>
